@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Hybrid_PC_Edit</class>
+ <widget class="QMainWindow" name="Hybrid_PC_Edit">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="cursor">
+   <cursorShape>PointingHandCursor</cursorShape>
+  </property>
+  <property name="windowTitle">
+   <string>Hybrid PC Edit</string>
+  </property>
+  <property name="windowIcon">
+   <iconset theme="appointment-soon">
+    <normaloff>.</normaloff>.</iconset>
+  </property>
+  <property name="locale">
+   <locale language="English" country="UnitedStates"/>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QComboBox" name="comboBox_Engine">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>50</y>
+      <width>200</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>ArrowCursor</cursorShape>
+    </property>
+    <item>
+     <property name="text">
+      <string>Front Wheel Drive</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Rear Wheel Drive</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>All Wheel Drive</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>50</y>
+      <width>120</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Engine Drive Form</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>150</y>
+      <width>120</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Main Motor(s) Form</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>200</y>
+      <width>120</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Sub Motor(s) Form</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_Sub_Motor">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>200</y>
+      <width>200</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>ArrowCursor</cursorShape>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>100</y>
+      <width>120</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Gearbox Type</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_Gearbox">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>100</y>
+      <width>200</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>ArrowCursor</cursorShape>
+    </property>
+    <item>
+     <property name="text">
+      <string>E-CVT Gearbox</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>3-DHT Gearbox</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Automatic Gearbox</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>CVT Gearbox</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>DCT  Gearbox</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AMT Gearbox</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>MT Gearbox</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QPushButton" name="pushButton_Copy">
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>500</y>
+      <width>80</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Copy</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_Main_Motor">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>150</y>
+      <width>200</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>ArrowCursor</cursorShape>
+    </property>
+   </widget>
+   <widget class="QTextBrowser" name="textBrowser">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>50</y>
+      <width>400</width>
+      <height>400</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuHybrid_PC_Edit">
+    <property name="title">
+     <string>Options</string>
+    </property>
+    <addaction name="actionExit"/>
+   </widget>
+   <addaction name="menuHybrid_PC_Edit"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
