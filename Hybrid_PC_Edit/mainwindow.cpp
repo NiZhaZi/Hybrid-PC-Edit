@@ -31,11 +31,24 @@ void PCn(){
 
 void updatePC(int a, int b, int c, int d){ // engine, gearbox, mainMotor, subMotor
     clearPC();
-    PC += "\"digidash_screen_logic\": \"digidash_screen_logic_bng_cus\",";
+    PC += "\"digidash_screen_logic\": \"auto_play_dash_screen\",";
     PCn();
-    PC += "\"digidash_cells_top_left0\": \"digidash_cells_top_left0_evVolume\",";
+    PC += "\"dash_battery_display\": \"dash_battery_display\",";
+    PCn();
+    PC += "\"dash_fuel_display\": \"dash_fuel_display\",";
+    PCn();
+    PC += "\"dash_awd_display\": \"dash_awd_display\",";
+    PCn();
+    PC += "\"dash_rpm_display\": \"dash_rpm_display\",";
+    PCn();
+    PC += "\"dash_power_display\": \"dash_power_display\",";
+    PCn();
+    PC += "\"navi_screen\": \"navi_screen\",";
+    PCn();
     PCn();
 
+    PC += "\"Camso_SpeedLimiter\": \"Camso_SpeedLimiter\",";
+    PCn();
     PC += "\"Camso_DSE\": \"Hybrid_DSE_01\",";
     PCn();
 
@@ -205,6 +218,18 @@ void updatePC(int a, int b, int c, int d){ // engine, gearbox, mainMotor, subMot
             PCn();
             break;
     }
+
+    PCn();
+    PC += "\"Dynamic_System\": \"Dynamic_System\",";
+    PCn();
+    PC += "\"Dynamic_awd\": \"Dynamic_awd\",";
+    PCn();
+    PC += "\"Dynamic_lsd\": \"Dynamic_lsd\",";
+    PCn();
+    PC += "\"Rear_Wheel_Steering\": \"Rear_Wheel_Steering\",";
+    PCn();
+    PC += "\"Suspension_Lift\": \"Suspension_Lift\",";
+    PCn();
 
 }
 
