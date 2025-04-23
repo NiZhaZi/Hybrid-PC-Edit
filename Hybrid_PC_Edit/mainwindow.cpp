@@ -31,27 +31,34 @@ void PCn(){
 
 void updatePC(int a, int b, int c, int d){ // engine, gearbox, mainMotor, subMotor
     clearPC();
-    PC += "//Dash and navigator functions, cancel comment them to use them.";
+    PC += "// Dash and navigator functions, cancel comment them to use them.";
     PCn();
-    PC += "//\"digidash_screen_logic\": \"auto_play_dash_screen\",";
+    PC += "// \"digidash_screen_logic\": \"auto_play_dash_screen\",";
     PCn();
-    PC += "//\"dash_battery_display\": \"dash_battery_display\",";
+    PC += "// \"dash_battery_display\": \"dash_battery_display\",";
     PCn();
-    PC += "//\"dash_fuel_display\": \"dash_fuel_display\",";
+    PC += "// \"dash_fuel_display\": \"dash_fuel_display\",";
     PCn();
-    PC += "//\"dash_awd_display\": \"dash_awd_display\",";
+    PC += "// \"dash_awd_display\": \"dash_awd_display\",";
     PCn();
-    PC += "//\"dash_rpm_display\": \"dash_rpm_display\",";
+    PC += "// \"dash_rpm_display\": \"dash_rpm_display\",";
     PCn();
-    PC += "//\"dash_power_display\": \"dash_power_display\",";
+    PC += "// \"dash_power_display\": \"dash_power_display\",";
     PCn();
-    PC += "//\"navi_screen\": \"navi_screen\",";
+    PC += "// \"navi_screen\": \"navi_screen\",";
     PCn();
     PCn();
 
     PC += "\"Camso_SpeedLimiter\": \"Camso_SpeedLimiter\",";
     PCn();
     PC += "\"Camso_DSE\": \"Hybrid_DSE_01\",";
+    PCn();
+
+    PC += "\"Version_AVAS\": \"\", // Version_Legacy Version_Beta";
+    PCn();
+    PC += "\"Sound_Forward\": \"Forward_AVAS_Sound_2\", // 1 - 5";
+    PCn();
+    PC += "\"Sound_Reverse\": \"Reverse_AVAS_Sound_2\", // 1 - 5"; // 1 - 5
     PCn();
 
     switch(a){
@@ -66,19 +73,19 @@ void updatePC(int a, int b, int c, int d){ // engine, gearbox, mainMotor, subMot
                 PC += "\"Hybrid_Configure\": \"Hybrid_Configure_FWD\",";
                 PCn();
                 PCn();
-                PC += "//\"Front_Torque_Table\": \"Front_Torque_Table_80NM\",";
+                PC += "// \"Front_Torque_Table\": \"Front_Torque_Table_80NM\",";
                 PCn();
-                PC += "//\"Front_Torque_Table\": \"Front_Torque_Table_120NM\",";
+                PC += "// \"Front_Torque_Table\": \"Front_Torque_Table_120NM\",";
                 PCn();
                 PC += "\"Front_Torque_Table\": \"Front_Torque_Table_220NM\",";
                 PCn();
-                PC += "//\"Front_Torque_Table\": \"Front_Torque_Table_320NM\",";
+                PC += "// \"Front_Torque_Table\": \"Front_Torque_Table_320NM\",";
                 PCn();
-                PC += "//\"Front_Torque_Table\": \"Front_Torque_Table_450NM\",";
+                PC += "// \"Front_Torque_Table\": \"Front_Torque_Table_450NM\",";
                 PCn();
-                PC += "//\"Front_Torque_Table\": \"Front_Torque_Table_560NM\",";
+                PC += "// \"Front_Torque_Table\": \"Front_Torque_Table_560NM\",";
                 PCn();
-                PC += "//\"Front_Torque_Table\": \"Front_Torque_Table_680NM\",";
+                PC += "// \"Front_Torque_Table\": \"Front_Torque_Table_680NM\",";
                 PCn();
                 PCn();
             }
@@ -104,19 +111,19 @@ void updatePC(int a, int b, int c, int d){ // engine, gearbox, mainMotor, subMot
                 PC += "\"Hybrid_Configure\": \"Hybrid_Configure_RWD\",";
                 PCn();
                 PCn();
-                PC += "//\"Rear_Torque_Table\": \"Rear_Torque_Table_100NM\",";
+                PC += "// \"Rear_Torque_Table\": \"Rear_Torque_Table_100NM\",";
                 PCn();
-                PC += "//\"Rear_Torque_Table\": \"Rear_Torque_Table_200NM\",";
+                PC += "// \"Rear_Torque_Table\": \"Rear_Torque_Table_200NM\",";
                 PCn();
                 PC += "\"Rear_Torque_Table\": \"Rear_Torque_Table_300NM\",";
                 PCn();
-                PC += "//\"Rear_Torque_Table\": \"Rear_Torque_Table_460NM\",";
+                PC += "// \"Rear_Torque_Table\": \"Rear_Torque_Table_460NM\",";
                 PCn();
-                PC += "//\"Rear_Torque_Table\": \"Rear_Torque_Table_580NM\",";
+                PC += "// \"Rear_Torque_Table\": \"Rear_Torque_Table_580NM\",";
                 PCn();
-                PC += "//\"Rear_Torque_Table\": \"Rear_Torque_Table_720NM\",";
+                PC += "// \"Rear_Torque_Table\": \"Rear_Torque_Table_720NM\",";
                 PCn();
-                PC += "//\"Rear_Torque_Table\": \"Rear_Torque_Table_830NM\",";
+                PC += "// \"Rear_Torque_Table\": \"Rear_Torque_Table_830NM\",";
                 PCn();
                 PCn();
             }
@@ -144,11 +151,11 @@ void updatePC(int a, int b, int c, int d){ // engine, gearbox, mainMotor, subMot
                 PC += "\"Hybrid_Configure\": \"Hybrid_Configure_AWD_hybrid_gearbox\",";
                 PCn();
                 PCn();
-                PC += "//\"AWD_Torque_Table\": \"AWD_Torque_Table_80NM\",";
+                PC += "// \"AWD_Torque_Table\": \"AWD_Torque_Table_80NM\",";
                 PCn();
                 PC += "\"AWD_Torque_Table\": \"AWD_Torque_Table_120NM\",";
                 PCn();
-                PC += "//\"AWD_Torque_Table\": \"AWD_Torque_Table_220NM\",";
+                PC += "// \"AWD_Torque_Table\": \"AWD_Torque_Table_220NM\",";
                 PCn();
                 PCn();
             }
@@ -162,34 +169,34 @@ void updatePC(int a, int b, int c, int d){ // engine, gearbox, mainMotor, subMot
                 PC += "\"Hybrid_Configure\": \"Hybrid_Configure_AWD\",";
                 PCn();
                 PCn();
-                PC += "//\"Front_Torque_Table\": \"Front_Torque_Table_80NM\",";
+                PC += "// \"Front_Torque_Table\": \"Front_Torque_Table_80NM\",";
                 PCn();
-                PC += "//\"Front_Torque_Table\": \"Front_Torque_Table_120NM\",";
+                PC += "// \"Front_Torque_Table\": \"Front_Torque_Table_120NM\",";
                 PCn();
                 PC += "\"Front_Torque_Table\": \"Front_Torque_Table_220NM\",";
                 PCn();
-                PC += "//\"Front_Torque_Table\": \"Front_Torque_Table_320NM\",";
+                PC += "// \"Front_Torque_Table\": \"Front_Torque_Table_320NM\",";
                 PCn();
-                PC += "//\"Front_Torque_Table\": \"Front_Torque_Table_450NM\",";
+                PC += "// \"Front_Torque_Table\": \"Front_Torque_Table_450NM\",";
                 PCn();
-                PC += "//\"Front_Torque_Table\": \"Front_Torque_Table_560NM\",";
+                PC += "// \"Front_Torque_Table\": \"Front_Torque_Table_560NM\",";
                 PCn();
-                PC += "//\"Front_Torque_Table\": \"Front_Torque_Table_680NM\",";
+                PC += "// \"Front_Torque_Table\": \"Front_Torque_Table_680NM\",";
                 PCn();
                 PCn();
-                PC += "//\"Rear_Torque_Table\": \"Rear_Torque_Table_100NM\",";
+                PC += "// \"Rear_Torque_Table\": \"Rear_Torque_Table_100NM\",";
                 PCn();
-                PC += "//\"Rear_Torque_Table\": \"Rear_Torque_Table_200NM\",";
+                PC += "// \"Rear_Torque_Table\": \"Rear_Torque_Table_200NM\",";
                 PCn();
                 PC += "\"Rear_Torque_Table\": \"Rear_Torque_Table_300NM\",";
                 PCn();
-                PC += "//\"Rear_Torque_Table\": \"Rear_Torque_Table_460NM\",";
+                PC += "// \"Rear_Torque_Table\": \"Rear_Torque_Table_460NM\",";
                 PCn();
-                PC += "//\"Rear_Torque_Table\": \"Rear_Torque_Table_580NM\",";
+                PC += "// \"Rear_Torque_Table\": \"Rear_Torque_Table_580NM\",";
                 PCn();
-                PC += "//\"Rear_Torque_Table\": \"Rear_Torque_Table_720NM\",";
+                PC += "// \"Rear_Torque_Table\": \"Rear_Torque_Table_720NM\",";
                 PCn();
-                PC += "//\"Rear_Torque_Table\": \"Rear_Torque_Table_830NM\",";
+                PC += "// \"Rear_Torque_Table\": \"Rear_Torque_Table_830NM\",";
                 PCn();
                 PCn();
             }
@@ -205,7 +212,7 @@ void updatePC(int a, int b, int c, int d){ // engine, gearbox, mainMotor, subMot
                 else{
                     PC += "\"Rear_ElectricMotor\": \"Rear_Single_ElectricMotor\",";
                     PCn();
-                    PC += "//\"Rear_Single_Motors_Table\": \"Rear_Single_Motors_Table_65NM\",";
+                    PC += "// \"Rear_Single_Motors_Table\": \"Rear_Single_Motors_Table_65NM\",";
                     PCn();
                     PC += "\"Rear_Single_Motors_Table\": \"Rear_Single_Motors_Table_95NM\",";
                     PCn();
@@ -218,7 +225,7 @@ void updatePC(int a, int b, int c, int d){ // engine, gearbox, mainMotor, subMot
                 else{
                     PC += "\"Front_ElectricMotor\": \"Front_Single_ElectricMotor\",";
                     PCn();
-                    PC += "//\"Front_Single_Motors_Table\": \"Front_Single_Motors_Table_65NM\",";
+                    PC += "// \"Front_Single_Motors_Table\": \"Front_Single_Motors_Table_65NM\",";
                     PCn();
                     PC += "\"Front_Single_Motors_Table\": \"Front_Single_Motors_Table_95NM\",";
                     PCn();
@@ -230,7 +237,7 @@ void updatePC(int a, int b, int c, int d){ // engine, gearbox, mainMotor, subMot
                 if((b == 0 || b == 1) || (b != 0 && b != 1 && c != 0)){
                     PC += "\"Rear_ElectricMotor\": \"Rear_Single_ElectricMotor\",";
                     PCn();
-                    PC += "//\"Rear_Single_Motors_Table\": \"Rear_Single_Motors_Table_65NM\",";
+                    PC += "// \"Rear_Single_Motors_Table\": \"Rear_Single_Motors_Table_65NM\",";
                     PCn();
                     PC += "\"Rear_Single_Motors_Table\": \"Rear_Single_Motors_Table_95NM\",";
                     PCn();
@@ -238,7 +245,7 @@ void updatePC(int a, int b, int c, int d){ // engine, gearbox, mainMotor, subMot
                 else{
                     PC += "\"Rear_ElectricMotor\": \"Rear_Dual_ElectricMotor\",";
                     PCn();
-                    PC += "//\"Rear_Dual_Motors_Table\": \"Rear_Dual_Motors_Table_65NM\",";
+                    PC += "// \"Rear_Dual_Motors_Table\": \"Rear_Dual_Motors_Table_65NM\",";
                     PCn();
                     PC += "\"Rear_Dual_Motors_Table\": \"Rear_Dual_Motors_Table_95NM\",";
                     PCn();
@@ -248,7 +255,7 @@ void updatePC(int a, int b, int c, int d){ // engine, gearbox, mainMotor, subMot
                 if((b == 0 || b == 1) || (b != 0 && b != 1 && c != 0)){
                     PC += "\"Front_ElectricMotor\": \"Front_Single_ElectricMotor\",";
                     PCn();
-                    PC += "//\"Front_Single_Motors_Table\": \"Front_Single_Motors_Table_65NM\",";
+                    PC += "// \"Front_Single_Motors_Table\": \"Front_Single_Motors_Table_65NM\",";
                     PCn();
                     PC += "\"Front_Single_Motors_Table\": \"Front_Single_Motors_Table_95NM\",";
                     PCn();
@@ -256,7 +263,7 @@ void updatePC(int a, int b, int c, int d){ // engine, gearbox, mainMotor, subMot
                 else{
                     PC += "\"Front_ElectricMotor\": \"Front_Dual_ElectricMotor\",";
                     PCn();
-                    PC += "//\"Front_Dual_Motors_Table\": \"Front_Dual_Motors_Table_65NM\",";
+                    PC += "// \"Front_Dual_Motors_Table\": \"Front_Dual_Motors_Table_65NM\",";
                     PCn();
                     PC += "\"Front_Dual_Motors_Table\": \"Front_Dual_Motors_Table_95NM\",";
                     PCn();
@@ -267,17 +274,17 @@ void updatePC(int a, int b, int c, int d){ // engine, gearbox, mainMotor, subMot
             if(a == 0){
                 PC += "\"Rear_ElectricMotor\": \"Rear_Dual_ElectricMotor\",";
                 PCn();
-                PC += "//\"Rear_Dual_Motors_Table\": \"Rear_Dual_Motors_Table_65NM\",";
+                PC += "// \"Rear_Dual_Motors_Table\": \"Rear_Dual_Motors_Table_65NM\",";
                 PCn();
                 PC += "\"Rear_Dual_Motors_Table\": \"Rear_Dual_Motors_Table_95NM\",";
                 PCn();
             }
             else if(a == 1){
-                PC += "\"Front_ElectricMotor\": \"Front_Single_ElectricMotor\",";
+                PC += "\"Front_ElectricMotor\": \"Front_Dual_ElectricMotor\",";
                 PCn();
-                PC += "//\"Front_Single_Motors_Table\": \"Front_Single_Motors_Table_65NM\",";
+                PC += "// \"Front_Dual_Motors_Table\": \"Front_Dual_Motors_Table_65NM\",";
                 PCn();
-                PC += "\"Front_Single_Motors_Table\": \"Front_Single_Motors_Table_95NM\",";
+                PC += "\"Front_Dual_Motors_Table\": \"Front_Dual_Motors_Table_95NM\",";
                 PCn();
                 
             }
@@ -316,7 +323,7 @@ void updatePC(int a, int b, int c, int d){ // engine, gearbox, mainMotor, subMot
     }
 
     PCn();
-    PC += "//Drive modes options.";
+    PC += "// Drive modes options.";
     PCn();
     PC += "\"auto\": \"auto_mode\",";
     PCn();
@@ -324,23 +331,22 @@ void updatePC(int a, int b, int c, int d){ // engine, gearbox, mainMotor, subMot
     PCn();
     PC += "\"electric\": \"electric_mode\",";
     PCn();
-    PC += "\"reev\": \"reev_mode\",";
-    PCn();
     PC += "\"fuel\": \"fuel_mode\",";
     PCn();
 
+
     PCn();
-    PC += "//Optional functions, cancel comment them to use them.";
+    PC += "// Optional functions, cancel comment them to use them.";
     PCn();
-    PC += "//\"Dynamic_System\": \"Dynamic_System\",";
+    PC += "// \"Dynamic_System\": \"Dynamic_System\",";
     PCn();
-    PC += "//\"Dynamic_awd\": \"Dynamic_awd\",";
+    PC += "// \"Dynamic_awd\": \"Dynamic_awd\",";
     PCn();
-    PC += "//\"Dynamic_lsd\": \"Dynamic_lsd\",";
+    PC += "// \"Dynamic_lsd\": \"Dynamic_lsd\",";
     PCn();
-    PC += "//\"Rear_Wheel_Steering\": \"Rear_Wheel_Steering\",";
+    PC += "// \"Rear_Wheel_Steering\": \"Rear_Wheel_Steering\",";
     PCn();
-    PC += "//\"Suspension_Lift\": \"Suspension_Lift\",";
+    PC += "// \"Suspension_Lift\": \"Suspension_Lift\",";
     PCn();
 
 }
