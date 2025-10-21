@@ -29,12 +29,12 @@ std::string build_pc(int a, int b, int c, int d)
     // add(L, "// \"navi_screen\": \"navi_screen\",");
     // nl(L);
 
-    // add(L, "\"Camso_SpeedLimiter\": \"Camso_SpeedLimiter\",");
-    // add(L, "\"Camso_DSE\": \"Hybrid_DSE_01\",");
+    add(L, "\"Camso_SpeedLimiter\": \"Camso_SpeedLimiter\",");
+    add(L, "\"Camso_DSE\": \"Hybrid_DSE_01\",");
 
-    // add(L, "\"Version_AVAS\": \"\", // Version_Legacy Version_Beta");
-    // add(L, "\"Sound_Forward\": \"Forward_AVAS_Sound_2\", // 1 - 5");
-    // add(L, "\"Sound_Reverse\": \"Reverse_AVAS_Sound_2\", // 1 - 5");
+    add(L, "\"Version_AVAS\": \"\", // Version_Legacy Version_Beta");
+    add(L, "\"Sound_Forward\": \"Forward_AVAS_Sound_2\", // 1 - 5");
+    add(L, "\"Sound_Reverse\": \"Reverse_AVAS_Sound_2\", // 1 - 5");
 
     switch (a) {
         case 0: { // FWD
