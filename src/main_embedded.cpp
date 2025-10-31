@@ -1,175 +1,249 @@
-#include "core.hpp"
-#include <pybind11/embed.h>
-#include <pybind11/stl.h>
-#include <iostream>
+// main_embedded.cpp  (Dear ImGui rewrite)
+// Single-OS-window UI, no extra "window-inside-window" look.
+// Uses GLFW + OpenGL2 backend for simplicity (no external GL loader).
 
-namespace py = pybind11;
+#include "core.hpp"   // build_pc, main_motor_options, sub_motor_options (existing logic)
+// ^ These functions come from existing core.cpp and remain unchanged.
 
-// Expose a pure C++ module to the embedded Python so the Tkinter UI can call it.
-PYBIND11_EMBEDDED_MODULE(hybrid_core, m) {
-    m.def("build_pc", &build_pc, "Build configuration string",
-          py::arg("engine"), py::arg("gearbox"), py::arg("main_motor"), py::arg("sub_motor"));
-    m.def("main_motor_options", &main_motor_options, "Main motor options",
-          py::arg("engine"), py::arg("gearbox"));
-    m.def("sub_motor_options", &sub_motor_options, "Sub motor options",
-          py::arg("engine"), py::arg("gearbox"), py::arg("main_motor"));
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <cstdio>
+
+// ---- GLFW / OpenGL2 / ImGui includes ----
+#include <GLFW/glfw3.h>
+#ifdef __APPLE__
+#  include <OpenGL/gl.h>
+#else
+#  include <GL/gl.h>
+#endif
+
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl2.h"
+#include "misc/cpp/imgui_stdlib.h" // std::string overloads for InputText*
+
+// Helper: build a Combo from std::vector<std::string>
+static bool ComboFromVector(const char* label, int* current_index, const std::vector<std::string>& items) {
+    auto getter = [](void* vec, int idx, const char** out_text) -> bool {
+        auto* v = static_cast<const std::vector<std::string>*>(vec);
+        if (idx < 0 || idx >= (int)v->size()) return false;
+        *out_text = (*v)[idx].c_str();
+        return true;
+    };
+    return ImGui::Combo(label, current_index, getter, (void*)&items, (int)items.size());
 }
 
-// The Tkinter UI script embedded as a raw Python string.
-static const char* PY_UI = R"PY(
-import sys
-try:
-    import tkinter as tk
-    from tkinter import ttk, messagebox
-except Exception as e:
-    print("ERROR: Tkinter is not available in this Python installation:", e, file=sys.stderr)
-    raise
+// Refresh helpers keep index when possible; fallback to 0 if out of range.
+static void SetItemsKeepingIndex(std::vector<std::string>& dst, const std::vector<std::string>& src, int& index) {
+    if (dst == src) return;           // nothing changed
+    std::string cur = (index >= 0 && index < (int)dst.size()) ? dst[index] : std::string();
+    dst = src;
+    if (dst.empty()) { index = -1; return; }
+    auto it = std::find(dst.begin(), dst.end(), cur);
+    index = (it != dst.end()) ? int(std::distance(dst.begin(), it)) : 0;
+}
 
-import hybrid_core as core
+int main() {
+    // --------------------- Create OS window ---------------------
+    if (!glfwInit()) return 1;
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-ENGINE = ["FWD", "RWD", "AWD"]
-GEARBOX = ["E-CVT", "DHT", "Automatic", "CVT", "DCT", "AMT", "MT"]
+    const float kUiScale = 1.20f; // 20% larger UI
+    const int kInitW = int(820 * kUiScale);
+    const int kInitH = int(600 * kUiScale);
+    GLFWwindow* window = glfwCreateWindow(kInitW, kInitH, "Hybrid PC Editor (ImGui)", nullptr, nullptr);
+    if (!window) { glfwTerminate(); return 1; }
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
 
-class App(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.title("Hybrid PC Editor (Tk)")
-        self.geometry("820x600")
+    // --------------------- ImGui setup ---------------------
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
 
-        # Controls frame
-        frm = ttk.Frame(self, padding=10)
-        frm.pack(side=tk.TOP, fill=tk.X)
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-        # Engine
-        ttk.Label(frm, text="Engine:").grid(row=0, column=0, sticky="w", padx=(0,6))
-        self.engine_cb = ttk.Combobox(frm, values=ENGINE, state="readonly", width=20)
-        self.engine_cb.grid(row=0, column=1, padx=6, pady=4)
-        self.engine_cb.current(0)
+    // --- UI scale: bigger fonts + larger widgets ---
+    // Increase default font size (default is ~13 px) and scale all style sizes.
+    ImFontConfig font_cfg;
+    font_cfg.SizePixels = 18.0f;          // tweak to 16~20 if you want slightly smaller/larger
+    io.Fonts->AddFontDefault(&font_cfg);  // add before backend creates the font texture
 
-        # Gearbox
-        ttk.Label(frm, text="Gearbox:").grid(row=0, column=2, sticky="w", padx=(12,6))
-        self.gear_cb = ttk.Combobox(frm, values=GEARBOX, state="readonly", width=20)
-        self.gear_cb.grid(row=0, column=3, padx=6, pady=4)
-        self.gear_cb.current(0)
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.ScaleAllSizes(kUiScale);        // scale widgets, paddings, spacing, etc.
 
-        # Main Motor
-        ttk.Label(frm, text="Main Motor:").grid(row=1, column=0, sticky="w", padx=(0,6))
-        self.main_cb = ttk.Combobox(frm, values=[], state="readonly", width=20)
-        self.main_cb.grid(row=1, column=1, padx=6, pady=4)
+    // Keep existing theme call (e.g., dark)
+    ImGui::StyleColorsDark();
 
-        # Sub Motor
-        ttk.Label(frm, text="Sub Motor:").grid(row=1, column=2, sticky="w", padx=(12,6))
-        self.sub_cb = ttk.Combobox(frm, values=[], state="readonly", width=20)
-        self.sub_cb.grid(row=1, column=3, padx=6, pady=4)
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL2_Init();
 
-        # Text output
-        self.text = tk.Text(self, wrap="none", height=26)
-        self.text.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=(4,10))
+    // --------------------- UI State ---------------------
+    // Static option labels (same as original Tk UI)
+    static const char* ENGINE_LBL[]  = {"FWD", "RWD", "AWD"};
+    static const char* GEARBOX_LBL[] = {"E-CVT", "DHT", "Automatic", "CVT", "DCT", "AMT", "MT"};
 
-        # Buttons
-        btns = ttk.Frame(self, padding=(10,0,10,10))
-        btns.pack(side=tk.BOTTOM, fill=tk.X)
-        self.copy_btn = ttk.Button(btns, text="Copy", command=self.copy_to_clipboard)
-        self.copy_btn.pack(side=tk.RIGHT)
+    // Indices in the same meaning as original (a,b,c,d)
+    int engine = 0, gearbox = 0, mainMotor = 0, subMotor = 0;
 
-        # Wire events
-        self.engine_cb.bind("<<ComboboxSelected>>", self.on_engine_or_gearbox)
-        self.gear_cb.bind("<<ComboboxSelected>>", self.on_engine_or_gearbox)
-        self.main_cb.bind("<<ComboboxSelected>>", self.on_main_motor)
-        self.sub_cb.bind("<<ComboboxSelected>>", self.on_any_change)
+    // Dynamic options driven by core.cpp logic
+    std::vector<std::string> mainOptions;
+    std::vector<std::string> subOptions;
 
-        # Initial populate/render
-        self.refresh_main_options(keep_index=False)
-        self.refresh_sub_options(keep_index=False)
-        self.render_text()
+    auto refreshMain = [&](bool keep_index) {
+        std::vector<std::string> fresh = main_motor_options(engine, gearbox);
+        if (keep_index) SetItemsKeepingIndex(mainOptions, fresh, mainMotor);
+        else { mainOptions = fresh; mainMotor = mainOptions.empty() ? -1 : 0; }
+    };
+    auto refreshSub = [&](bool keep_index) {
+        std::vector<std::string> fresh = sub_motor_options(engine, gearbox, (mainMotor < 0 ? 0 : mainMotor));
+        if (fresh.empty()) {
+            // AWD case: keep previous list unchanged (mirror original Tk behavior).
+            if (subOptions.empty()) { subMotor = -1; }
+            else if (subMotor < 0 || subMotor >= (int)subOptions.size()) { subMotor = 0; }
+            return;
+        }
+        if (keep_index) SetItemsKeepingIndex(subOptions, fresh, subMotor);
+        else { subOptions = fresh; subMotor = subOptions.empty() ? -1 : 0; }
+    };
+    auto clampIndex = [](int& idx, int n) { if (n <= 0) idx = -1; else if (idx < 0 || idx >= n) idx = 0; };
 
-    def get_indices(self):
-        a = self.engine_cb.current()
-        b = self.gear_cb.current()
-        c = self.main_cb.current()
-        d = self.sub_cb.current()
-        # Guard against -1 when combobox is empty
-        a = 0 if a is None or a < 0 else a
-        b = 0 if b is None or b < 0 else b
-        c = 0 if c is None or c < 0 else c
-        d = 0 if d is None or d < 0 else d
-        return a,b,c,d
+    // Initial populate & text
+    refreshMain(false);
+    refreshSub(false);
+    std::string configText = build_pc(engine, gearbox, (mainMotor < 0 ? 0 : mainMotor), (subMotor < 0 ? 0 : subMotor));
 
-    def on_engine_or_gearbox(self, _evt=None):
-        # Changing engine or gearbox can affect both Main/Sub lists.
-        self.refresh_main_options(keep_index=False)
-        self.refresh_sub_options(keep_index=False)
-        self.render_text()
+    bool copiedToast = false;
+    float toastTimer = 0.0f;
 
-    def on_main_motor(self, _evt=None):
-        # Changing main motor can affect sub-motor list.
-        self.refresh_sub_options(keep_index=False)
-        self.render_text()
+    // --------------------- Main loop ---------------------
+    while (!glfwWindowShouldClose(window)) {
+        glfwPollEvents();
 
-    def on_any_change(self, _evt=None):
-        self.render_text()
+        ImGui_ImplOpenGL2_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
 
-    def refresh_main_options(self, keep_index=True):
-        a = self.engine_cb.current()
-        b = self.gear_cb.current()
-        new_items = core.main_motor_options(a, b)
-        self._set_combo_items(self.main_cb, new_items, keep_index=keep_index)
+        // Root window covering the main viewport's work area (no inner decorative window).
+        ImGuiViewport* vp = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(vp->WorkPos);
+        ImGui::SetNextWindowSize(vp->WorkSize);
+        ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+                                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse |
+                                 ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus |
+                                 ImGuiWindowFlags_NoNavFocus;
+        if (ImGui::Begin("##root", nullptr, flags)) {
 
-    def refresh_sub_options(self, keep_index=True):
-        a = self.engine_cb.current()
-        b = self.gear_cb.current()
-        c = self.main_cb.current()
-        new_items = core.sub_motor_options(a, b, c)
-        if new_items:
-            self._set_combo_items(self.sub_cb, new_items, keep_index=keep_index)
-        else:
-            # AWD case: leave items unchanged by design.
-            if self.sub_cb.current() < 0 and self.sub_cb['values']:
-                self.sub_cb.current(0)
+            // --- Controls: one pair per row (label + combo) ---
+            // Each combo sits on its own line. We keep the same change-handlers.
+            ImGui::PushItemWidth(220.0f * kUiScale);
 
-    def _set_combo_items(self, cb, items, keep_index=True):
-        old_items = list(cb['values'])
-        old_idx = cb.current()
-        if items != old_items:
-            cb['values'] = items
-            if keep_index and 0 <= old_idx < len(items):
-                cb.current(old_idx)
-            else:
-                cb.current(0)
+            // Row 1: Engine
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted("Engine:");
+            ImGui::SameLine();
+            if (ImGui::Combo("##engine", &engine, ENGINE_LBL, IM_ARRAYSIZE(ENGINE_LBL))) {
+                // Changing engine affects both Main/Sub lists and the text
+                refreshMain(false);
+                refreshSub(false);
+                clampIndex(mainMotor, (int)mainOptions.size());
+                clampIndex(subMotor,  (int)subOptions.size());
+                configText = build_pc(engine, gearbox, (mainMotor < 0 ? 0 : mainMotor), (subMotor < 0 ? 0 : subMotor));
+            }
 
-    def render_text(self):
-        a,b,c,d = self.get_indices()
-        try:
-            text = core.build_pc(a,b,c,d)
-        except Exception as e:
-            text = f"[Error building text: {e}]"
-        self.text.delete("1.0", tk.END)
-        self.text.insert("1.0", text)
+            ImGui::Spacing(); // visual gap between rows
 
-    def copy_to_clipboard(self):
-        txt = self.text.get("1.0", tk.END)
-        self.clipboard_clear()
-        self.clipboard_append(txt)
-        self.update()
-        messagebox.showinfo("Copied", "Configuration text copied to clipboard.")
+            // Row 2: Gearbox
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted("Gearbox:");
+            ImGui::SameLine();
+            if (ImGui::Combo("##gearbox", &gearbox, GEARBOX_LBL, IM_ARRAYSIZE(GEARBOX_LBL))) {
+                // Changing gearbox affects both Main/Sub lists and the text
+                refreshMain(false);
+                refreshSub(false);
+                clampIndex(mainMotor, (int)mainOptions.size());
+                clampIndex(subMotor,  (int)subOptions.size());
+                configText = build_pc(engine, gearbox, (mainMotor < 0 ? 0 : mainMotor), (subMotor < 0 ? 0 : subMotor));
+            }
 
-def main():
-    app = App()
-    app.mainloop()
+            ImGui::Spacing();
 
-if __name__ == "__main__":
-    main()
-)PY";
+            // Row 3: Main Motor
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted("Main Motor:");
+            ImGui::SameLine();
+            if (ComboFromVector("##main", &mainMotor, mainOptions)) {
+                // Changing main motor can affect sub-motor list and the text
+                refreshSub(false);
+                clampIndex(subMotor, (int)subOptions.size());
+                configText = build_pc(engine, gearbox, (mainMotor < 0 ? 0 : mainMotor), (subMotor < 0 ? 0 : subMotor));
+            }
 
-int main(int argc, char** argv) {
-    try {
-        py::scoped_interpreter guard{}; // Start the Python interpreter.
-        // Make current working directory importable.
-        py::module_::import("sys").attr("path").attr("insert")(0, ".");
-        py::exec(PY_UI);
-    } catch (const std::exception& e) {
-        std::cerr << "Fatal error: " << e.what() << std::endl;
-        return 1;
+            ImGui::Spacing();
+
+            // Row 4: Sub Motor
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted("Sub Motor:");
+            ImGui::SameLine();
+            // If AWD keeps list unchanged and it's empty initially, disable the combo.
+            bool disableSub = subOptions.empty();
+            if (disableSub) ImGui::BeginDisabled(true);
+            if (ComboFromVector("##sub", &subMotor, subOptions)) {
+                configText = build_pc(engine, gearbox, (mainMotor < 0 ? 0 : mainMotor), (subMotor < 0 ? 0 : subMotor));
+            }
+            if (disableSub) ImGui::EndDisabled();
+
+            ImGui::PopItemWidth();
+
+            ImGui::Separator();
+
+            // --- Multiline output (read-only) ---
+            // Fill remaining space minus a small area for the bottom button row.
+            ImVec2 avail = ImGui::GetContentRegionAvail();
+            float buttonRowH = 40.0f;
+            ImVec2 textSize(avail.x, std::max(0.0f, avail.y - buttonRowH));
+            ImGui::InputTextMultiline("##config_text", &configText, textSize,
+                                      ImGuiInputTextFlags_ReadOnly);
+            // Bottom row: right-aligned "Copy" button with a small inline toast
+            ImGui::Dummy(ImVec2(avail.x - 90.0f, 0.0f)); ImGui::SameLine();
+            if (ImGui::Button("Copy", ImVec2(90.0f, 0.0f))) {
+                ImGui::SetClipboardText(configText.c_str());
+                copiedToast = true;
+                toastTimer = 1.2f; // seconds
+            }
+            ImGui::SameLine();
+            if (copiedToast) {
+                ImGui::TextUnformatted("Copied!");
+                toastTimer -= ImGui::GetIO().DeltaTime;
+                if (toastTimer <= 0.0f) copiedToast = false;
+            }
+        }
+        ImGui::End();
+
+        // Render
+        ImGui::Render();
+        int display_w, display_h;
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+        glClear(GL_COLOR_BUFFER_BIT);
+        ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+        glfwSwapBuffers(window);
     }
+
+    // Cleanup
+    ImGui_ImplOpenGL2_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+    glfwDestroyWindow(window);
+    glfwTerminate();
     return 0;
 }
+
+#ifdef _WIN32
+#include <windows.h>
+// Wrap WinMain to call your existing main(), so we don't need to refactor anything.
+int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+    return main();
+}
+#endif
