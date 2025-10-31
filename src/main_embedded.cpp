@@ -53,7 +53,7 @@ int main() {
     const float kUiScale = 1.20f; // 20% larger UI
     const int kInitW = int(820 * kUiScale);
     const int kInitH = int(600 * kUiScale);
-    GLFWwindow* window = glfwCreateWindow(kInitW, kInitH, "Hybrid PC Editor (ImGui)", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(kInitW, kInitH, "Hybrid PC Editor", nullptr, nullptr);
     if (!window) { glfwTerminate(); return 1; }
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
